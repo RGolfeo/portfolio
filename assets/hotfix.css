@@ -33,3 +33,12 @@
 .tool-live-card:nth-child(8) .tool-live-logo{background-position:50% 100%!important;}
 .tool-live-card:nth-child(9) .tool-live-logo{background-position:75% 100%!important;}
 .tool-live-card:nth-child(10) .tool-live-logo{background-position:100% 100%!important;}
+
+/* Final pre-booking presentation: keep the approved portfolio and HD assets,
+   but remove all Book a Call / scheduler UI. */
+.hero .hero-actions .btn-outline,
+#contact .contact-actions .btn-primary,
+#contact .call-note,
+#contact .contact-panel > a.contact-link:first-of-type{
+  display:none!important;
+}
