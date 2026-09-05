@@ -36,11 +36,64 @@
       <a href="#work">Work</a>
       <a href="#experience">Experience</a>
       <a href="#tools">Tools</a>
-      <a class="nav-cta" href="#contact">Book a call ↗</a>
+      <a class="nav-cta" href="https://scheduler.zoom.us/ryan-golfeo-yytx71/20-minute-intro-call" target="_blank" rel="noopener">Book a call ↗</a>
     </div>
   </div>
 </nav>
 <main id="siteContent"></main>
 <script src="assets/app.js?v=5"></script>
+<script>
+(function(){
+  const bookingUrl='https://scheduler.zoom.us/ryan-golfeo-yytx71/20-minute-intro-call';
+
+  function wireZoomBooking(){
+    const navCta=document.querySelector('.nav-cta');
+    if(navCta){
+      navCta.href=bookingUrl;
+      navCta.target='_blank';
+      navCta.rel='noopener';
+    }
+
+    const heroBook=[...document.querySelectorAll('.hero-actions a')].find(a=>/book a call/i.test(a.textContent||''));
+    if(heroBook){
+      heroBook.href=bookingUrl;
+      heroBook.target='_blank';
+      heroBook.rel='noopener';
+      heroBook.textContent='Book a call ↗';
+    }
+
+    const contactPrimary=document.querySelector('#contact .contact-actions .btn-primary');
+    if(contactPrimary){
+      contactPrimary.href=bookingUrl;
+      contactPrimary.target='_blank';
+      contactPrimary.rel='noopener';
+      contactPrimary.textContent='Schedule intro call ↗';
+    }
+
+    const introLink=[...document.querySelectorAll('#contact .contact-link')].find(a=>{
+      const first=a.querySelector('span');
+      return first && first.textContent.trim().toLowerCase()==='intro call';
+    });
+    if(introLink){
+      introLink.href=bookingUrl;
+      introLink.target='_blank';
+      introLink.rel='noopener';
+      const spans=introLink.querySelectorAll('span');
+      if(spans[1]) spans[1].textContent='Schedule on Zoom ↗';
+    }
+
+    const note=document.querySelector('#contact .call-note');
+    if(note) note.textContent='Choose an available time on my Zoom Scheduler. Your booking will include the Zoom meeting details automatically.';
+  }
+
+  wireZoomBooking();
+  const host=document.getElementById('siteContent');
+  if(host){
+    const observer=new MutationObserver(wireZoomBooking);
+    observer.observe(host,{childList:true,subtree:true});
+    setTimeout(()=>observer.disconnect(),8000);
+  }
+})();
+</script>
 </body>
 </html>
