@@ -1,5 +1,6 @@
-/* Production hotfix: keep visual assets local to GitHub Pages. */
-.hero-frame > img{display:block!important;opacity:1!important;visibility:visible!important;}
+/* Production hotfix: local, cache-safe hero and tool assets. */
+.hero-frame{background-image:url('hero-fix.webp')!important;background-size:cover!important;background-position:center 24%!important;background-repeat:no-repeat!important;}
+.hero-frame > img{opacity:0!important;visibility:hidden!important;}
 
 .tool-live-logo{background-image:url('tools-sprite-fix.webp')!important;background-size:500% 200%!important;background-repeat:no-repeat!important;background-color:#0b141e!important;}
 .tool-live-logo > img{display:none!important;}
