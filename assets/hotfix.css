@@ -1,0 +1,15 @@
+/* Production hotfix: keep visual assets local to GitHub Pages. */
+.hero-frame > img{display:block!important;opacity:1!important;visibility:visible!important;}
+
+.tool-live-logo{background-image:url('tools-sprite-fix.webp')!important;background-size:500% 200%!important;background-repeat:no-repeat!important;background-color:#0b141e!important;}
+.tool-live-logo > img{display:none!important;}
+.tool-live-card:nth-child(1) .tool-live-logo{background-position:0% 0%!important;}
+.tool-live-card:nth-child(2) .tool-live-logo{background-position:25% 0%!important;}
+.tool-live-card:nth-child(3) .tool-live-logo{background-position:50% 0%!important;}
+.tool-live-card:nth-child(4) .tool-live-logo{background-position:75% 0%!important;}
+.tool-live-card:nth-child(5) .tool-live-logo{background-position:100% 0%!important;}
+.tool-live-card:nth-child(6) .tool-live-logo{background-position:0% 100%!important;}
+.tool-live-card:nth-child(7) .tool-live-logo{background-position:25% 100%!important;}
+.tool-live-card:nth-child(8) .tool-live-logo{background-position:50% 100%!important;}
+.tool-live-card:nth-child(9) .tool-live-logo{background-position:75% 100%!important;}
+.tool-live-card:nth-child(10) .tool-live-logo{background-position:100% 100%!important;}
