@@ -1,7 +1,26 @@
 /* Production hotfix: local, cache-safe hero and tool assets. */
-.hero-frame{background-image:url('hero-fix.webp')!important;background-size:cover!important;background-position:center 24%!important;background-repeat:no-repeat!important;}
-.hero-frame > img{opacity:0!important;visibility:hidden!important;}
 
+/* Fast low-res placeholder while the HD portrait is reconstructed locally. */
+.hero-frame{
+  background-image:url('hero-fix.webp')!important;
+  background-size:cover!important;
+  background-position:center 24%!important;
+  background-repeat:no-repeat!important;
+}
+.hero-frame > img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center 24%!important;
+  opacity:0!important;
+  visibility:visible!important;
+  image-rendering:auto!important;
+  transition:opacity .45s ease!important;
+}
+.hero-frame.hero-hd-ready > img{opacity:1!important;}
+
+/* Local tools sprite: avoids broken third-party logo/CDN requests. */
 .tool-live-logo{background-image:url('tools-sprite-fix.webp')!important;background-size:500% 200%!important;background-repeat:no-repeat!important;background-color:#0b141e!important;}
 .tool-live-logo > img{display:none!important;}
 .tool-live-card:nth-child(1) .tool-live-logo{background-position:0% 0%!important;}
