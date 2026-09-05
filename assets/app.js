@@ -2,29 +2,34 @@
   const host=document.getElementById('siteContent');
   try{
     const urls=['fragments/part1.html','fragments/part2.html','fragments/part3.html'];
-    const parts=await Promise.all(urls.map(async u=>{const r=await fetch(u);if(!r.ok)throw new Error('Failed to load '+u);return r.text();}));
+    const parts=await Promise.all(urls.map(async u=>{const r=await fetch(u,{cache:'force-cache'});if(!r.ok)throw new Error('Failed to load '+u);return r.text();}));
+
+    // Keep the approved layout exactly the same while improving delivery:
+    // prioritize the hero, lazy-load proof images, and avoid external tool-logo requests.
+    parts[0]=parts[0].replace('<img src="assets/hero.webp"','<img fetchpriority="high" decoding="async" src="assets/hero.webp"');
+    parts[1]=parts[1].replace(/<img /g,'<img loading="lazy" decoding="async" ');
+    parts[2]=parts[2].replace(/<img\b[^>]*>/gi,'');
     host.innerHTML=parts.join('');
 
-    // Progressive HD hero loader. The small local hero remains as a fast fallback,
-    // then the sharper 800px portrait is reconstructed from local GitHub Pages chunks.
+    // True-HD hero upgrade. The small local image remains an instant fallback,
+    // then a much higher-quality portrait replaces it once decoded.
     const heroFrame=document.querySelector('.hero-frame');
     const heroImg=heroFrame?.querySelector('img');
     if(heroFrame&&heroImg){
-      const chunkUrls=Array.from({length:7},(_,i)=>`assets/hero-hd/chunk-${String(i+1).padStart(2,'0')}.txt?v=1`);
-      Promise.all(chunkUrls.map(async u=>{
-        const r=await fetch(u,{cache:'force-cache'});
-        if(!r.ok)throw new Error('Failed HD hero chunk '+u);
-        return (await r.text()).trim();
-      })).then(chunks=>{
-        const cleanBase64=chunks.join('').replace(/=+$/,'');
-        const hd='data:image/webp;base64,'+cleanBase64;
-        const preload=new Image();
-        preload.onload=()=>{
-          heroImg.src=hd;
-          heroFrame.classList.add('hero-hd-ready');
-        };
-        preload.src=hd;
-      }).catch(err=>console.warn('HD hero fallback active',err));
+      fetch('assets/hero-hd/hero-v2-q90.txt?v=2',{cache:'force-cache'})
+        .then(r=>{if(!r.ok)throw new Error('Failed HD hero source');return r.text();})
+        .then(base64=>{
+          const hd='data:image/webp;base64,'+base64.trim();
+          const preload=new Image();
+          preload.decoding='async';
+          preload.onload=()=>{
+            heroImg.src=hd;
+            heroFrame.classList.add('hero-hd-ready');
+          };
+          preload.onerror=()=>console.warn('HD hero decode failed; fallback retained');
+          preload.src=hd;
+        })
+        .catch(err=>console.warn('HD hero fallback active',err));
     }
   }catch(err){
     console.error(err);
