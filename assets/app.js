@@ -16,7 +16,8 @@
         if(!r.ok)throw new Error('Failed HD hero chunk '+u);
         return (await r.text()).trim();
       })).then(chunks=>{
-        const hd='data:image/webp;base64,'+chunks.join('');
+        const cleanBase64=chunks.join('').replace(/=+$/,'');
+        const hd='data:image/webp;base64,'+cleanBase64;
         const preload=new Image();
         preload.onload=()=>{
           heroImg.src=hd;
