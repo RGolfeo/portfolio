@@ -4,6 +4,27 @@
     const urls=['fragments/part1.html','fragments/part2.html','fragments/part3.html'];
     const parts=await Promise.all(urls.map(async u=>{const r=await fetch(u);if(!r.ok)throw new Error('Failed to load '+u);return r.text();}));
     host.innerHTML=parts.join('');
+
+    // Progressive HD hero loader. The small local hero remains as a fast fallback,
+    // then the sharper 800px portrait is reconstructed from local GitHub Pages chunks.
+    const heroFrame=document.querySelector('.hero-frame');
+    const heroImg=heroFrame?.querySelector('img');
+    if(heroFrame&&heroImg){
+      const chunkUrls=Array.from({length:7},(_,i)=>`assets/hero-hd/chunk-${String(i+1).padStart(2,'0')}.txt?v=1`);
+      Promise.all(chunkUrls.map(async u=>{
+        const r=await fetch(u,{cache:'force-cache'});
+        if(!r.ok)throw new Error('Failed HD hero chunk '+u);
+        return (await r.text()).trim();
+      })).then(chunks=>{
+        const hd='data:image/webp;base64,'+chunks.join('');
+        const preload=new Image();
+        preload.onload=()=>{
+          heroImg.src=hd;
+          heroFrame.classList.add('hero-hd-ready');
+        };
+        preload.src=hd;
+      }).catch(err=>console.warn('HD hero fallback active',err));
+    }
   }catch(err){
     console.error(err);
     host.innerHTML='<section style="min-height:60vh;display:grid;place-items:center;padding:80px 24px;background:#071019;color:#f4efe5"><div><h1 style="font-family:Manrope,sans-serif">Portfolio loading issue</h1><p>Please refresh the page.</p></div></section>';
