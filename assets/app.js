@@ -4,32 +4,35 @@
     const urls=['fragments/part1.html','fragments/part2.html','fragments/part3.html'];
     const parts=await Promise.all(urls.map(async u=>{const r=await fetch(u,{cache:'force-cache'});if(!r.ok)throw new Error('Failed to load '+u);return r.text();}));
 
-    // Keep the approved layout exactly the same while improving delivery:
-    // prioritize the hero, lazy-load proof images, and avoid external tool-logo requests.
+    // Keep the approved V3 layout exactly the same while improving delivery.
     parts[0]=parts[0].replace('<img src="assets/hero.webp"','<img fetchpriority="high" decoding="async" src="assets/hero.webp"');
     parts[1]=parts[1].replace(/<img /g,'<img loading="lazy" decoding="async" ');
+    // Tools are rendered from the local sprite in hotfix.css, so avoid external logo requests.
     parts[2]=parts[2].replace(/<img\b[^>]*>/gi,'');
     host.innerHTML=parts.join('');
 
-    // True-HD hero upgrade. The small local image remains an instant fallback,
-    // then a much higher-quality portrait replaces it once decoded.
+    // Full-resolution Hero upgrade.
+    // The small local portrait is an instant fallback; the approved 1112x1415
+    // high-quality WebP is reconstructed from local GitHub Pages chunks and faded in.
     const heroFrame=document.querySelector('.hero-frame');
     const heroImg=heroFrame?.querySelector('img');
     if(heroFrame&&heroImg){
-      fetch('assets/hero-hd/hero-v2-q90.txt?v=2',{cache:'force-cache'})
-        .then(r=>{if(!r.ok)throw new Error('Failed HD hero source');return r.text();})
-        .then(base64=>{
-          const hd='data:image/webp;base64,'+base64.trim();
-          const preload=new Image();
-          preload.decoding='async';
-          preload.onload=()=>{
-            heroImg.src=hd;
-            heroFrame.classList.add('hero-hd-ready');
-          };
-          preload.onerror=()=>console.warn('HD hero decode failed; fallback retained');
-          preload.src=hd;
-        })
-        .catch(err=>console.warn('HD hero fallback active',err));
+      const hdUrls=Array.from({length:9},(_,i)=>`assets/hero-hd-v3/part-${String(i+1).padStart(2,'0')}.txt?v=1`);
+      Promise.all(hdUrls.map(async u=>{
+        const r=await fetch(u,{cache:'force-cache'});
+        if(!r.ok) throw new Error('Failed HD hero chunk '+u);
+        return (await r.text()).trim();
+      })).then(chunks=>{
+        const hd='data:image/webp;base64,'+chunks.join('');
+        const preload=new Image();
+        preload.decoding='async';
+        preload.onload=()=>{
+          heroImg.src=hd;
+          heroFrame.classList.add('hero-hd-ready');
+        };
+        preload.onerror=()=>console.warn('HD hero decode failed; fallback retained');
+        preload.src=hd;
+      }).catch(err=>console.warn('HD hero fallback active',err));
     }
   }catch(err){
     console.error(err);
